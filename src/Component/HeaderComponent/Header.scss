@@ -1,0 +1,27 @@
+.mainHeader{
+    height: 60px;
+    position: static;
+    background-color: #fff;
+}
+.header--logo{
+    padding:0px 100px 0px 0px;
+}
+.header--logo img{
+    width: 40px;
+    height: 40px;
+}
+.header--search{
+    width: 300px;
+}
+.header--search input{
+    width:300px;
+    padding:4px 10px;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+}
+
+.header--icon>div{
+    color:black;
+    font-size: 1.5rem;
+    cursor:pointer;
+}
