@@ -1,15 +1,16 @@
-import React from 'react';
 import './App.css';
-import MainPage from './Component/MainPageComponent/MainPage'
-import LoginPage from './Component/LoginComponent/LoginPage';
+import { getStorageDetail } from './Layout/StorageDetail';
+import PrivateRoute from './Layout/PrivateRoute';
+import PublicRoute from './Layout/PublicRoute';
 
 function App() {
+  let data = getStorageDetail();
   return (
     <div className="App">
-      {/* <MainPage/> */}
-      <LoginPage/>
+     {
+      data ? <PrivateRoute/> : <PublicRoute/>
+     }
     </div>
   );
 }
-
 export default App;
