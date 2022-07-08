@@ -1,14 +1,21 @@
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { RouterData } from '../RouterData'
 import { getStorageDetail } from '../Layout/StorageDetail'
 import React from "react";
-import { AppstoreOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
-import './PrivateRoute.scss';
-import {Box,Drawer,AppBar,Toolbar,CssBaseline} from '@mui/material'
+import { Box, Drawer, AppBar, Toolbar, CssBaseline } from '@mui/material'
+import '../Component/HeaderComponent/Header.scss'
+import { BiCalendar } from 'react-icons/bi'
+import { BsChat } from 'react-icons/bs'
+import { IoIosNotificationsOutline } from 'react-icons/io';
+import { IoIosLogOut } from 'react-icons/io';
+import { AiOutlineMenu } from 'react-icons/ai';
+import { AiOutlineSearch } from 'react-icons/ai'
+import { GiSettingsKnobs } from 'react-icons/gi'
+import { TiMessages } from 'react-icons/ti';
+import './PrivateRoute.scss'
 import 'antd/dist/antd.css';
-import Header from "../Component/HeaderComponent/Header";
 
 const drawerWidth = 240;
 
@@ -27,49 +34,168 @@ function getItem(
         children,
         label,
         type,
+     
     } as MenuItem;
 }
+const sidebarRoute = RouterData?.map((item: any) => {
+    if (item.layout === "/dashboard") {
+      if(!item.submenu){
+        return getItem(item.name, item.key, item.icon)
+      }
+      else{
+         return getItem(item.name, item.key, item.icon,[
+            getItem("AddDoctors", "sub1", item.icon)
+         ])
+      }
+    }
+    else {
+        return null
+    }
+})
+const items: MenuProps['items'] = sidebarRoute
+const Header = () => {
+    return (
+        <div>
+            <div className='container-fluid mainHeader d-flex '>
+                <div className='d-flex align-items-center'>
+                    <div className="menu--icon">
+                        <AiOutlineMenu data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling" />
+                    </div>
+                    <div className='header--logo'>
+                        <img src="https://i.pinimg.com/736x/b9/c5/34/b9c5344544ba5f44997f4190dfdf273d.jpg" alt="logo" />
+                    </div>
+                </div>
+                <div className='d-flex flex-grow-1 justify-content-between align-items-center'>
+                    <div className='header--search d-flex'>
+                        <input placeholder='search...' className='form-control' />
+                    </div>
+                    <div className='mobile--show header--icon'>
+                        <div>
+                            <AiOutlineSearch />
+                        </div>
 
-const items: MenuProps['items'] = [
-    getItem('Dashboard', 'sub1', <AppstoreOutlined />),
-    getItem('Appointment', 'sub2', <AppstoreOutlined />),
-    getItem('Taskboard', 'sub3', <AppstoreOutlined />),
-    getItem('Doctors', 'sub4', <AppstoreOutlined />),
-    getItem('Patients', 'sub5', <AppstoreOutlined />),
-];
+                    </div>
+                    <div className='d-flex gap-2 gap-sm-2 gap-md-2 gap-lg-4 header--icon'>
+                        <div>
+                            <BiCalendar />
+                        </div>
+                        <div>
+                            <BsChat />
+                        </div>
+                        <div>
+                            <TiMessages />
+                        </div>
+                        <div>
+                            <IoIosNotificationsOutline />
+                        </div>
+                        <div>
+                            <GiSettingsKnobs />
+                        </div>
+                        <div>
+                            <IoIosLogOut />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    )
+}
+const BreamCrumbComponent = () => {
+    return (
+        <>
+            bread crumb
+        </>
+    )
+}
 const PrivateRoute = () => {
     const navigate = useNavigate()
-
+    const location = useLocation();
     const onClick: MenuProps['onClick'] = e => {
-        console.log('click ', e);
-        if (e.key === "sub1") {
-            navigate("/dashboard/maindashboard")
-        }
-        if (e.key === "sub2") {
-            navigate("/dashboard/appointment")
-        }
-        if (e.key === "sub3") {
-            navigate("/dashboard/taskboard")
-        }
-        if (e.key === "sub4") {
-            navigate("/dashboard/doctors")
-        }
-        if (e.key === "sub5") {
-            navigate("/dashboard/patients")
-        }
+        RouterData?.map((item) => {
+            if (item.layout === "/dashboard") {
+                if(!item.submenu){
+                    if (item.key === e.key) {
+                        return navigate(item.layout + item.path)
+                    }
+                }
+                else{
+                 item.menuItems?.map((val)=>{
+                    console.log(val,e)
+                    if (val.key === e.key) {
+                        return navigate(val.layout + val.path)
+                    }
+                 })
+                }
+            }
+            else {
+                return null;
+            }
+        })
     };
     const getRoutes = () => {
         let data = getStorageDetail()
         return RouterData?.map((item) => {
             if (item.layout === '/dashboard') {
-                console.log(item)
-                return data ? (<Route path={item.layout + item.path} element={item.component} />) : (<Navigate to="/" />)
+                if(!item.submenu){
+                    return data ? (<Route path={item.layout + item.path} element={item.component} />) : (<Navigate to="/" />)
+                }
+                else{
+                    item.menuItems?.map((e:any)=>{
+                        return <Route path={e.layout + item.path} element={e.component} />
+                    })
+                }
             }
             else {
                 return null;
             }
         })
     }
+    const SideBarActiveMenu = () => {
+        switch (location.pathname) {
+            case "/dashboard/maindashboard": {
+                return {
+                    defaultOpenKeys: ["sub1"],
+                    defaultSelectedKeys: ["Dashboard"],
+                };
+            }
+            case "/dashboard/appointment": {
+                return {
+                    defaultOpenKeys: ["sub2"],
+                    defaultSelectedKeys: ["Appointment"],
+                };
+            }
+            case "/dashboard/taskboard": {
+                return {
+                    defaultOpenKeys: ["sub3"],
+                    defaultSelectedKeys: ["Taskboard"],
+                };
+            }
+            case "/dashboard/doctors": {
+                return {
+                    defaultOpenKeys: ["sub4"],
+                    defaultSelectedKeys: ["Doctors"],
+                };
+            }
+            case "/dashboard/patients": {
+                return {
+                    defaultOpenKeys: ["sub5"],
+                    defaultSelectedKeys: ["Patients"],
+                };
+            }
+
+            default: {
+                return {
+                    defaultOpenKeys: [],
+                    defaultSelectedKeys: [],
+                }
+            }
+        }
+    }
+
+    let activeMenu = SideBarActiveMenu()
+
     return (
         <div>
             <Box sx={{ display: 'flex' }}>
@@ -80,6 +206,7 @@ const PrivateRoute = () => {
                 <Drawer
                     variant="permanent"
                     sx={{
+                        display: { xs: "none", md: "none", lg: "flex", xl: "flex" },
                         width: drawerWidth,
                         flexShrink: 0,
                         [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box', background: "#f4f7f6 !important", borderRight: "0px" },
@@ -89,14 +216,27 @@ const PrivateRoute = () => {
                     <Menu
                         onClick={onClick}
                         style={{ width: "100%", background: "#f4f7f6" }}
-                        defaultSelectedKeys={['1']}
-                        defaultOpenKeys={['sub1']}
+                        defaultSelectedKeys={activeMenu.defaultOpenKeys}
+                        defaultOpenKeys={activeMenu.defaultSelectedKeys}
                         mode="inline"
                         items={items}
                     />
                 </Drawer>
+                <div className="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+                    <div className="offcanvas-body" data-bs-dismiss="offcanvas" aria-label="Close" >
+                        <Menu
+                            onClick={onClick}
+                            style={{ width: "100%", background: "#f4f7f6" }}
+                            defaultSelectedKeys={activeMenu.defaultOpenKeys}
+                            defaultOpenKeys={activeMenu.defaultSelectedKeys}
+                            mode="inline"
+                            items={items}
+                        />
+                    </div>
+                </div>
                 <Box component="main" className="main--body">
                     <Toolbar />
+                    <BreamCrumbComponent />
                     <Routes>
                         {getRoutes()}
                     </Routes>

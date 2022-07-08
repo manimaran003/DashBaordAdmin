@@ -2,6 +2,7 @@
     background-color: #f4f7f6;
     height: 100%;
     padding: 20px;
+    width: 100%;
 }
 
 .ant-menu-sub.ant-menu-inline{
@@ -9,4 +10,10 @@ background-color:#f4f7f6 !important;
 }
 .ant-menu{
     background-color: #f4f7f6;
+}
+.ant-menu-item-selected {
+    color:#5237cc !important;
+}
+.ant-menu-inline .ant-menu-item::after{
+    border-right: #5237cc;
 }

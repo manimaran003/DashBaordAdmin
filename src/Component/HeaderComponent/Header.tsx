@@ -1,16 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './Header.scss'
 import { BiCalendar } from 'react-icons/bi'
 import { BsChat } from 'react-icons/bs'
 import { IoIosNotificationsOutline } from 'react-icons/io';
 import { IoIosLogOut } from 'react-icons/io';
-import {IoIosSearch} from 'react-icons/io';
+import {AiOutlineMenu} from 'react-icons/ai';
 import { GiSettingsKnobs } from 'react-icons/gi'
 import { TiMessages } from 'react-icons/ti';
-const Header = () => {
+const Header:React.FC<{handleSide:(state:Boolean)=>void}>=(props) => {
+    // const [openSide,setSideBar]=useState<Boolean>(false)
+    const openHandleSideBar=()=>{
+        // setSideBar(true)
+        props.handleSide(true)
+    }
     return (
-        <div className='container-fluid mainHeader d-flex'>
+        <div>
+             <div className='container-fluid mainHeader d-flex'>
             <div className='d-flex align-items-center'>
+                <div className="menu--icon">
+                    <AiOutlineMenu onClick={openHandleSideBar}/>
+                </div>
                 <div className='header--logo'>
                     <img src="https://i.pinimg.com/736x/b9/c5/34/b9c5344544ba5f44997f4190dfdf273d.jpg" alt="logo" />
                 </div>
@@ -41,6 +50,7 @@ const Header = () => {
                 </div>
             </div>
 
+        </div>
         </div>
     )
 }
