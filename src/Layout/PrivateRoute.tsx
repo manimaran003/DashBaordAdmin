@@ -1,10 +1,10 @@
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { RouterData } from '../RouterData'
 import { getStorageDetail } from '../Layout/StorageDetail'
-import React from "react";
+import React, { useState } from "react";
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
-import { Box, Drawer, AppBar, Toolbar, CssBaseline } from '@mui/material'
+import { Box, Drawer, AppBar, Toolbar, CssBaseline, Breadcrumbs, Link, Typography } from '@mui/material'
 import '../Component/HeaderComponent/Header.scss'
 import { BiCalendar } from 'react-icons/bi'
 import { BsChat } from 'react-icons/bs'
@@ -12,10 +12,14 @@ import { IoIosNotificationsOutline } from 'react-icons/io';
 import { IoIosLogOut } from 'react-icons/io';
 import { AiOutlineMenu } from 'react-icons/ai';
 import { AiOutlineSearch } from 'react-icons/ai'
+import { AiOutlineHome } from 'react-icons/ai'
 import { GiSettingsKnobs } from 'react-icons/gi'
 import { TiMessages } from 'react-icons/ti';
+import { BiLeftArrowAlt } from 'react-icons/bi';
+import { AiOutlineUser } from 'react-icons/ai'
 import './PrivateRoute.scss'
 import 'antd/dist/antd.css';
+import AddDoctor from '../Component/Views/Doctors/AddDoctor';
 
 const drawerWidth = 240;
 
@@ -34,22 +38,24 @@ function getItem(
         children,
         label,
         type,
-     
+
     } as MenuItem;
 }
 const sidebarRoute = RouterData?.map((item: any) => {
     if (item.layout === "/dashboard") {
-      if(!item.submenu){
-        return getItem(item.name, item.key, item.icon)
-      }
-      else{
-         return getItem(item.name, item.key, item.icon,[
-            getItem("AddDoctors", "sub1", item.icon)
-         ])
-      }
+        if (!item.submenu) {
+            return getItem(item.name, item.key, item.icon)
+        }
+        else {
+            return item.menuItems.map((e: any) => {
+                return getItem(item.name, item.key, item.icon, [
+                    getItem(e.name, e.key, e.icon)
+                ])
+            })
+        }
     }
     else {
-        return null
+        return null;
     }
 })
 const items: MenuProps['items'] = sidebarRoute
@@ -102,31 +108,124 @@ const Header = () => {
         </div>
     )
 }
-const BreamCrumbComponent = () => {
-    return (
-        <>
-            bread crumb
-        </>
-    )
-}
+
 const PrivateRoute = () => {
+    const [hideSidebar, setSidebar] = useState<Boolean>(true)
     const navigate = useNavigate()
     const location = useLocation();
+    const breadCrumbsPath = () => {
+        console.log("breadCrumbsPath", location.pathname);
+        switch (location.pathname) {
+            case "/dashboard/maindashboard": {
+                return {
+                    path: "Dashboard",
+                    route: ["dashboard",],
+                };
+            }
+            case "/dashboard/appointment": {
+                return {
+                    path: "Book Appointment",
+                    route: ["appointment"],
+                };
+            }
+            case "/dashboard/taskboard": {
+                return {
+                    path: "Taskboard",
+                    route: ["taskboard"],
+                };
+            }
+            default:
+                return {
+                    path: "",
+                    route: ["", ""]
+                }
+        }
+    }
+    const BreamCrumbComponent = () => {
+        let bread = breadCrumbsPath()
+        return (
+            <div className='container-fluid'>
+                <div className="row">
+                    <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                        <div className="d-flex align-items-center gap-2">
+                            <div className="breadcrumb-icon">
+                                <BiLeftArrowAlt onClick={() => setSidebar(!hideSidebar)} />
+                            </div>
+                            <div className='breadcrumb-name'>
+                                {bread.path}
+                            </div>
+                        </div>
+                        <div className="d-flex flex-column">
+                            <div>
+                                <Breadcrumbs aria-label="breadcrumb">
+                                    <Link
+                                        href="#"
+                                    >
+                                        <AiOutlineHome className="bread-icon" />
+                                    </Link>
+                                    {
+                                        bread?.route?.map((val: any) => {
+                                            return (
+                                                <>
+                                                    <Typography
+                                                        className="bread-name"
+                                                    >
+                                                        {val}
+                                                    </Typography>
+                                                </>
+                                            )
+                                        })
+                                    }
+                                </Breadcrumbs>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 hidden--mobile">
+                        <div className="d-flex justify-content-end gap-4">
+                            <div>
+                                <span className="chartBar">VISITORS</span>
+                                <div className="d-flex align-items-center gap-1">
+                                    <span><AiOutlineUser className="chartBar-bar-icon" /></span>
+                                    <span className="chartBar-bar-text">1,784</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span className="chartBar">VISITS</span>
+                                <div className="d-flex align-items-center gap-1">
+                                    <span><AiOutlineUser className="chartBar-bar-icon" /></span>
+                                    <span className="chartBar-bar-text">1,784</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span className="chartBar">CHATS</span>
+                                <div className="d-flex align-items-center gap-1">
+                                    <span><AiOutlineUser className="chartBar-bar-icon" /></span>
+                                    <span className="chartBar-bar-text">1,784</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
     const onClick: MenuProps['onClick'] = e => {
         RouterData?.map((item) => {
             if (item.layout === "/dashboard") {
-                if(!item.submenu){
+                if (!item.submenu) {
                     if (item.key === e.key) {
                         return navigate(item.layout + item.path)
                     }
                 }
-                else{
-                 item.menuItems?.map((val)=>{
-                    console.log(val,e)
-                    if (val.key === e.key) {
-                        return navigate(val.layout + val.path)
-                    }
-                 })
+                else {
+                    item.menuItems?.map((val) => {
+                        console.log("new path", val)
+                        if (val.key === e.key) {
+                            console.log("checkpath", val.key, e.key)
+                            return navigate(val.layout + val.path)
+                        }
+                    })
                 }
             }
             else {
@@ -138,14 +237,21 @@ const PrivateRoute = () => {
         let data = getStorageDetail()
         return RouterData?.map((item) => {
             if (item.layout === '/dashboard') {
-                if(!item.submenu){
+                if (!item.submenu) {
                     return data ? (<Route path={item.layout + item.path} element={item.component} />) : (<Navigate to="/" />)
                 }
-                else{
-                    item.menuItems?.map((e:any)=>{
-                        return <Route path={e.layout + item.path} element={e.component} />
+                if (item.submenu) {
+                    return item.menuItems?.map((e: any) => {
+                        console.log("hai new e", e)
+                        return <Route path={e.layout + e.path} element={e.component} />
                     })
                 }
+                // else {
+                //     item.menuItems?.map((e: any) => {
+                //         console.log("hai new e",e)
+                //         return <Route path={e.layout + e.path} element={<AddDoctor/>} />
+                //     })
+                // }
             }
             else {
                 return null;
@@ -203,25 +309,29 @@ const PrivateRoute = () => {
                 <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, boxShadow: "none !important" }}>
                     <Header />
                 </AppBar>
-                <Drawer
-                    variant="permanent"
-                    sx={{
-                        display: { xs: "none", md: "none", lg: "flex", xl: "flex" },
-                        width: drawerWidth,
-                        flexShrink: 0,
-                        [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box', background: "#f4f7f6 !important", borderRight: "0px" },
-                    }}
-                >
-                    <Toolbar />
-                    <Menu
-                        onClick={onClick}
-                        style={{ width: "100%", background: "#f4f7f6" }}
-                        defaultSelectedKeys={activeMenu.defaultOpenKeys}
-                        defaultOpenKeys={activeMenu.defaultSelectedKeys}
-                        mode="inline"
-                        items={items}
-                    />
-                </Drawer>
+                {
+                    hideSidebar && (
+                        <Drawer
+                            variant="permanent"
+                            sx={{
+                                display: { xs: "none", md: "none", lg: "flex", xl: "flex" },
+                                width: drawerWidth,
+                                flexShrink: 0,
+                                [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box', background: "#f4f7f6 !important", borderRight: "0px", marginTop: "57px" },
+                            }}
+                        >
+                            <Menu
+                                onClick={onClick}
+                                style={{ width: "100%", background: "#f4f7f6" }}
+                                defaultSelectedKeys={activeMenu.defaultOpenKeys}
+                                defaultOpenKeys={activeMenu.defaultSelectedKeys}
+                                mode="inline"
+                                items={items}
+                            />
+                        </Drawer>
+                    )
+                }
+
                 <div className="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
                     <div className="offcanvas-body" data-bs-dismiss="offcanvas" aria-label="Close" >
                         <Menu
@@ -234,9 +344,11 @@ const PrivateRoute = () => {
                         />
                     </div>
                 </div>
-                <Box component="main" className="main--body">
+                <Box className="main--body">
                     <Toolbar />
-                    <BreamCrumbComponent />
+                    <div className="d-flex">
+                        <BreamCrumbComponent />
+                    </div>
                     <Routes>
                         {getRoutes()}
                     </Routes>

@@ -1,12 +1,14 @@
 import LoginPage from "./Component/LoginComponent/LoginPage"
 import Appointment from "./Component/Views/Appointment/Appointment"
-import Doctors from "./Component/Views/Doctors/Doctors"
 import MainDashboard from "./Component/Views/MainDashboard/MainDashboard"
 import Patients from "./Component/Views/Patients/Patients"
 import Taskboard from "./Component/Views/Taskboard/Taskboard"
 import {GoHome} from 'react-icons/go'
 import {AiOutlineUserAdd} from 'react-icons/ai'
+import AddDoctor from "./Component/Views/Doctors/AddDoctor"
 import {BsCalendar3,BsListTask} from 'react-icons/bs'
+import EditDoctor from "./Component/Views/Doctors/EditDoctor"
+import DeleteDoctors from "./Component/Views/Doctors/DeleteDoctors"
 export const RouterData=[
     {
         path:"/",
@@ -42,23 +44,36 @@ export const RouterData=[
     },
     {
         name:"Doctors",
-        path:"/doctors",
-        component:<Doctors/>,
+        path:"",
         layout:"/dashboard",
         submenu:true,
         key:"sub4",
         icon:<AiOutlineUserAdd/>,
         menuItems:[      
                 {
-                  path: "/AddDoctors",
+                  path: "/AddDoctor",
                   name: "Add Doctor",
                   layout: "/dashboard",
                   icon: <AiOutlineUserAdd/>,
-                  visibleInMenu: true,
-                  secondSubmenu: false,
-                  key: "sub-add",
-                  component: <Doctors/>,
+                  key: "sub-add1",
+                  component: <AddDoctor/>,
                 },
+                {
+                    path: "/EditDoctor",
+                    name: "Edit Doctor",
+                    layout: "/dashboard",
+                    icon: <AiOutlineUserAdd/>,
+                    key: "sub-add2",
+                    component: <EditDoctor/>,
+                  },
+                  {
+                    path: "/DeleteDoctor",
+                    name: "Delete Doctor",
+                    layout: "/dashboard",
+                    icon: <AiOutlineUserAdd/>,
+                    key: "sub-add3",
+                    component: <DeleteDoctors/>,
+                  },
             ]
     },
     {
@@ -68,5 +83,5 @@ export const RouterData=[
         layout:"/dashboard",
         key:"sub5",
         icon:<AiOutlineUserAdd/>
-    }
+    },
 ]
